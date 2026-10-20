@@ -2,150 +2,255 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>عروض وفرص | أفضل المنتجات</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
-header{background:#102b46;color:white;padding:24px 16px;text-align:center}
-header h1{margin:0 0 8px;font-size:30px}
-header p{margin:0;color:#d7e7f5}
-main{max-width:1000px;margin:auto;padding:18px}
-.search{width:100%;padding:14px;border:1px solid #d5deea;border-radius:10px;font-size:16px;margin-bottom:18px}
-h2{font-size:21px}
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.card,.admin{background:white;border-radius:14px;padding:15px;box-shadow:0 3px 14px #152b4610}
-.card img{width:100%;height:180px;object-fit:contain;background:#f7f9fc;border-radius:10px}
-.card h3{margin:12px 0 8px}
-.price{font-size:21px;font-weight:bold;color:#087f5b}
-.desc{color:#5c6678;line-height:1.7}
-.buy{display:block;text-align:center;background:#087f5b;color:white;padding:12px;border-radius:9px;text-decoration:none;font-weight:bold}
-.admin{margin-top:28px}
-label{display:block;margin:12px 0 6px;font-weight:bold}
-input,textarea{width:100%;padding:12px;border:1px solid #ccd5e0;border-radius:8px;font:inherit}
-button{border:0;border-radius:9px;background:#102b46;color:white;padding:13px 18px;font:inherit;cursor:pointer}
-.note{font-size:13px;color:#697586;line-height:1.7}
-.empty{text-align:center;padding:25px;color:#657184}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10243a">
+  <title>عروض وفرص | أفضل المنتجات</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+    header {
+      background: #10243a;
+      color: white;
+      padding: 28px 16px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 10px; font-size: 30px; }
+    header p { margin: 0; color: #d4e5f6; line-height: 1.8; }
+    main { max-width: 1100px; margin: auto; padding: 20px 14px; }
+    .search {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d5dce6;
+      border-radius: 12px;
+      font-size: 16px;
+      background: white;
+      margin-bottom: 20px;
+    }
+    .status {
+      text-align: center;
+      padding: 24px 10px;
+      color: #536174;
+      line-height: 1.9;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .product {
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 3px 14px #182b4510;
+      border: 1px solid #e7ecf2;
+      display: flex;
+      flex-direction: column;
+    }
+    .product img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: white;
+    }
+    .product-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .product h2 { font-size: 18px; margin: 0 0 10px; }
+    .price {
+      font-size: 19px;
+      font-weight: bold;
+      color: #087f5b;
+      margin-bottom: 10px;
+    }
+    .description {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #536174;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      flex: 1;
+    }
+    .buy {
+      display: block;
+      text-align: center;
+      background: #087f5b;
+      color: white;
+      text-decoration: none;
+      border-radius: 9px;
+      padding: 12px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .buy:hover { background: #066b4c; }
+    footer {
+      text-align: center;
+      padding: 24px 12px;
+      color: #64748b;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>عروض وفرص</h1>
-  <p>اكتشف منتجات مميزة واختر العرض المناسب لك</p>
-</header>
+  <header>
+    <h1>عروض وفرص</h1>
+    <p>اكتشف أفضل المنتجات والعروض في مكان واحد</p>
+  </header>
 
-<main>
-  <input id="search" class="search" placeholder="ابحث عن منتج..." oninput="renderProducts()">
-  <h2>🛍️ أحدث المنتجات والعروض</h2>
-  <section id="products" class="products"></section>
+  <main>
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="ابحث عن منتج..."
+      aria-label="ابحث عن منتج"
+    >
 
-  <section class="admin">
-    <h2>➕ إضافة منتج جديد</h2>
-    <p class="note">النموذج الحالي للتجربة على هذا الجهاز فقط. الحفظ العام لجميع الزوار يحتاج ربط Supabase وتأمين صلاحية الإدارة.</p>
-    <form id="productForm">
-      <label for="name">اسم المنتج</label>
-      <input id="name" required placeholder="مثال: قطاعة خضروات">
+    <div id="status" class="status">جارٍ تحميل المنتجات...</div>
+    <section id="products" class="products"></section>
+  </main>
 
-      <label for="price">السعر بالجنيه أو الريال</label>
-      <input id="price" type="number" min="0" step="0.01" placeholder="مثال: 99">
+  <footer>
+    عروض وفرص — اكتشف المنتج المناسب لك.
+    قد نحصل على عمولة عند الشراء من بعض الروابط.
+  </footer>
 
-      <label for="image">صورة المنتج من الهاتف</label>
-      <input id="image" type="file" accept="image/*">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // بيانات الاتصال العامة بمشروع عروض وفرص فقط.
+    // لا تضع هنا أي Secret Key أو service_role key.
+    const SUPABASE_URL =
+      "https://xlpaawabcnwdjfifahzs.supabase.co";
 
-      <label for="description">وصف المنتج</label>
-      <textarea id="description" rows="3" placeholder="اكتب وصفًا مختصرًا"></textarea>
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_4KPZkv0RhC4E3TVMgRerZg_aPFSxrzd";
 
-      <label for="affiliate">رابط التسويق بالعمولة</label>
-      <input id="affiliate" type="url" required placeholder="https://...">
+    const statusBox = document.getElementById("status");
+    const productsBox = document.getElementById("products");
+    const searchBox = document.getElementById("search");
 
-      <br><br>
-      <button type="submit">حفظ المنتج على هذا الجهاز</button>
-    </form>
-  </section>
-  <p class="note">قد تتغير الأسعار وتوافر المنتجات. بعض الروابط تسويقية بالعمولة وقد نحصل على عمولة عند الشراء من خلالها.</p>
-</main>
+    let allProducts = [];
 
-<script>
-let products = [];
-try {
-  products = JSON.parse(localStorage.getItem("oroodProducts") || "[]");
-} catch(e) {
-  products = [];
-}
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
-
-function renderProducts() {
-  const term = document.getElementById("search").value.trim().toLowerCase();
-  const filtered = products.filter(p => p.name.toLowerCase().includes(term));
-  const container = document.getElementById("products");
-
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty">لا توجد منتجات بعد. أضف أول منتج من النموذج أدناه.</div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(p => `
-    <article class="card">
-      ${p.image ? `<img src="${p.image}" alt="${escapeHTML(p.name)}">` : ""}
-      <h3>${escapeHTML(p.name)}</h3>
-      ${p.price !== "" && p.price != null ? `<div class="price">${escapeHTML(p.price)}</div>` : ""}
-      <p class="desc">${escapeHTML(p.description)}</p>
-      <a class="buy" href="${escapeHTML(p.affiliate)}" target="_blank" rel="noopener noreferrer sponsored">عرض المنتج</a>
-    </article>
-  `).join("");
-}
-
-document.getElementById("productForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const file = document.getElementById("image").files[0];
-  let image = "";
-
-  if (file) {
-    if (!file.type.startsWith("image/")) {
-      alert("اختر ملف صورة صالحًا.");
-      return;
+    function addText(parent, tag, className, value) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = value == null ? "" : String(value);
+      parent.appendChild(element);
+      return element;
     }
-    if (file.size > 1500000) {
-      alert("حجم الصورة كبير. اختر صورة أصغر من 1.5 ميجابايت.");
-      return;
+
+    function validWebUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch {
+        return false;
+      }
     }
-    image = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
 
-  products.unshift({
-    name: document.getElementById("name").value.trim(),
-    price: document.getElementById("price").value,
-    image,
-    description: document.getElementById("description").value.trim(),
-    affiliate: document.getElementById("affiliate").value.trim()
-  });
+    function renderProducts() {
+      const term = searchBox.value.trim().toLocaleLowerCase("ar");
+      productsBox.replaceChildren();
 
-  try {
-    localStorage.setItem("oroodProducts", JSON.stringify(products));
-  } catch(err) {
-    products.shift();
-    alert("تعذر الحفظ على الجهاز. جرّب صورة أصغر.");
-    return;
-  }
+      const filtered = allProducts.filter(product =>
+        [product.name, product.description]
+          .some(value =>
+            String(value || "").toLocaleLowerCase("ar").includes(term)
+          )
+      );
 
-  this.reset();
-  renderProducts();
-  alert("تم حفظ المنتج على هذا الجهاز. لم يُنشر بعد للزوار الآخرين.");
-});
+      if (!filtered.length) {
+        statusBox.textContent = allProducts.length
+          ? "لا توجد منتجات تطابق بحثك."
+          : "لا توجد منتجات منشورة حاليًا. ستظهر المنتجات هنا بعد إضافتها إلى قاعدة البيانات.";
+        statusBox.hidden = false;
+        return;
+      }
 
-renderProducts();
-</script>
+      statusBox.hidden = true;
+
+      filtered.forEach(product => {
+        const card = document.createElement("article");
+        card.className = "product";
+
+        if (product.image_url && validWebUrl(product.image_url)) {
+          const image = document.createElement("img");
+          image.src = product.image_url;
+          image.alt = product.name || "صورة المنتج";
+          image.loading = "lazy";
+          image.onerror = () => image.remove();
+          card.appendChild(image);
+        }
+
+        const content = document.createElement("div");
+        content.className = "product-content";
+
+        addText(content, "h2", "", product.name || "منتج");
+
+        if (product.price !== null && product.price !== undefined) {
+          addText(content, "div", "price", `${product.price} `);
+        }
+
+        addText(
+          content,
+          "p",
+          "description",
+          product.description || "اكتشف تفاصيل المنتج."
+        );
+
+        if (validWebUrl(product.affiliate_url || "")) {
+          const buy = document.createElement("a");
+          buy.className = "buy";
+          buy.href = product.affiliate_url;
+          buy.target = "_blank";
+          buy.rel = "noopener noreferrer sponsored";
+          buy.textContent = "عرض المنتج والشراء";
+          content.appendChild(buy);
+        }
+
+        card.appendChild(content);
+        productsBox.appendChild(card);
+      });
+    }
+
+    async function loadProducts() {
+      statusBox.hidden = false;
+      statusBox.textContent = "جارٍ تحميل المنتجات...";
+
+      const { data, error } = await supabaseClient
+        .from("products")
+        .select("id,name,price,image_url,description,affiliate_url,created_at")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Supabase error:", error);
+        statusBox.textContent =
+          "تعذر تحميل المنتجات. تأكد من اتصال قاعدة البيانات وسياسات القراءة.";
+        return;
+      }
+
+      allProducts = data || [];
+      renderProducts();
+    }
+
+    searchBox.addEventListener("input", renderProducts);
+
+    loadProducts();
+  </script>
 </body>
 </html>
