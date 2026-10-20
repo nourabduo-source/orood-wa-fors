@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -13,10 +14,7 @@
       background: #f4f6f9;
       color: #222;
     }
-    main {
-      max-width: 750px;
-      margin: auto;
-    }
+    main { max-width: 750px; margin: auto; }
     .card {
       background: white;
       padding: 20px;
@@ -30,13 +28,14 @@
       margin-top: 14px;
       font-weight: bold;
     }
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 12px;
       margin-top: 6px;
       border: 1px solid #ccc;
       border-radius: 7px;
       font-size: 16px;
+      background: white;
     }
     button {
       border: 0;
@@ -50,14 +49,29 @@
     }
     button.secondary { background: #555; }
     button.danger { background: #b42318; }
+    button:disabled { opacity: .6; cursor: wait; }
     .product {
       border: 1px solid #ddd;
       border-radius: 9px;
       padding: 14px;
       margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+    .product img {
+      display: block;
+      max-width: 180px;
+      max-height: 180px;
+      object-fit: contain;
+      margin: 10px 0;
     }
     .status { margin-top: 12px; white-space: pre-wrap; }
     .hidden { display: none; }
+    #imagePreview {
+      max-width: 180px;
+      max-height: 180px;
+      object-fit: contain;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -65,10 +79,14 @@
   <section class="card" id="loginPanel">
     <h1>عروض وفرص</h1>
     <h2>تسجيل دخول المدير</h2>
+
     <label for="email">البريد الإلكتروني</label>
-    <input id="email" type="email" autocomplete="username">
+    <input id="email" type="email" autocomplete="username" required>
+
     <label for="password">كلمة المرور</label>
-    <input id="password" type="password" autocomplete="current-password">
+    <input id="password" type="password"
+           autocomplete="current-password" required>
+
     <button id="loginButton">تسجيل الدخول</button>
     <div class="status" id="loginStatus"></div>
   </section>
@@ -81,6 +99,7 @@
 
     <div class="card">
       <h2 id="formTitle">إضافة منتج جديد</h2>
+
       <form id="productForm">
         <input id="productId" type="hidden">
 
@@ -90,40 +109,39 @@
         <label for="price">السعر</label>
         <input id="price" type="number" min="0" step="0.01">
 
-        
-<label for="imageFile">رفع صورة من الهاتف</label>
-<input id="imageFile" type="file" accept="image/*">
+        <label for="imageFile">رفع صورة من الهاتف</label>
+        <input id="imageFile" type="file" accept="image/*">
 
-<img id="imagePreview" class="hidden" alt="معاينة الصورة"
-     style="max-width:160px;max-height:160px;margin-top:10px;">
+        <img id="imagePreview" class="hidden" alt="معاينة الصورة">
+        <p id="imageStatus" class="status"></p>
 
-<label for="image">أو رابط صورة المنتج</label>
-<input id="image" type="url" placeholder="https://...">
+        <label for="image">أو رابط صورة المنتج</label>
+        <input id="image" type="url" placeholder="https://...">
 
-<label for="category">قسم المنتج</label>
-<select id="category">
-  <option value="عام">عام</option>
-  <option value="إلكترونيات">إلكترونيات</option>
-  <option value="أدوات منزلية">أدوات منزلية</option>
-  <option value="المطبخ">المطبخ</option>
-  <option value="العناية الشخصية">العناية الشخصية</option>
-  <option value="الأزياء">الأزياء</option>
-  <option value="الجمال">الجمال</option>
-  <option value="أخرى">أخرى</option>
-</select>
+        <label for="category">قسم المنتج</label>
+        <select id="category">
+          <option value="عام">عام</option>
+          <option value="إلكترونيات">إلكترونيات</option>
+          <option value="أدوات منزلية">أدوات منزلية</option>
+          <option value="المطبخ">المطبخ</option>
+          <option value="العناية الشخصية">العناية الشخصية</option>
+          <option value="الأزياء">الأزياء</option>
+          <option value="الجمال">الجمال</option>
+          <option value="أخرى">أخرى</option>
+        </select>
 
-<label for="description">وصف المنتج</label>
-<textarea id="description" rows="3"></textarea>
-
+        <label for="description">وصف المنتج</label>
+        <textarea id="description" rows="3"></textarea>
 
         <label for="affiliate">رابط الشراء أو العمولة *</label>
         <input id="affiliate" type="url" required placeholder="https://...">
 
-        <button type="submit">حفظ المنتج</button>
+        <button id="saveButton" type="submit">حفظ المنتج</button>
         <button type="button" id="cancelEdit" class="secondary hidden">
           إلغاء التعديل
         </button>
       </form>
+
       <div id="saveStatus" class="status"></div>
     </div>
 
@@ -138,35 +156,26 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (() => {
-  // ضع رابط مشروع Supabase ومفتاح anon/public الخاصين بمشروعك.
-  const SUPABASE_URL = "ضع_رابط_مشروع_Supabase_هنا";
-  const SUPABASE_ANON_KEY = "ضع_مفتاح_anon_أو_publishable_هنا";
+  const SUPABASE_URL =
+    "https://xlpaawabcnwdjfifahzs.supabase.co";
 
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_4KPZkv0RhC4E3TVMgRerZg_aPFSxrzd";
+
+  const BUCKET = "product-images";
   const $ = id => document.getElementById(id);
-  let db = null;
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
   let currentUser = null;
+  let existingImageUrl = null;
+  let previewObjectUrl = null;
 
   function status(id, message) {
     $(id).textContent = message;
-  }
-
-  function configureSupabase() {
-    if (
-      SUPABASE_URL.includes("ضع_") ||
-      SUPABASE_ANON_KEY.includes("ضع_")
-    ) {
-      status(
-        "loginStatus",
-        "يجب إدخال بيانات Supabase الصحيحة قبل تسجيل الدخول."
-      );
-      return false;
-    }
-
-    db = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-    return true;
   }
 
   function showAdmin(show) {
@@ -174,10 +183,81 @@
     $("adminPanel").classList.toggle("hidden", !show);
   }
 
+  function showImage(url) {
+    const preview = $("imagePreview");
+
+    if (previewObjectUrl) {
+      URL.revokeObjectURL(previewObjectUrl);
+      previewObjectUrl = null;
+    }
+
+    if (!url) {
+      preview.removeAttribute("src");
+      preview.classList.add("hidden");
+      return;
+    }
+
+    preview.src = url;
+    preview.classList.remove("hidden");
+  }
+
+  $("imageFile").addEventListener("change", () => {
+    const file = $("imageFile").files[0];
+
+    if (!file) {
+      showImage($("image").value.trim() || existingImageUrl);
+      status("imageStatus", "");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      $("imageFile").value = "";
+      status("imageStatus", "اختر ملف صورة صالحًا.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      $("imageFile").value = "";
+      status("imageStatus", "حجم الصورة يجب ألا يتجاوز 5 ميجابايت.");
+      return;
+    }
+
+    previewObjectUrl = URL.createObjectURL(file);
+    showImage(previewObjectUrl);
+    status("imageStatus", "معاينة الصورة جاهزة.");
+  });
+
+  $("image").addEventListener("input", () => {
+    if (!$("imageFile").files.length) {
+      showImage($("image").value.trim() || existingImageUrl);
+    }
+  });
+
+  async function uploadImage(file) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const path = Date.now() + "-" +
+      Math.random().toString(36).slice(2) + "-" + safeName;
+
+    const { error } = await db.storage
+      .from(BUCKET)
+      .upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (error) throw error;
+
+    const { data } = db.storage
+      .from(BUCKET)
+      .getPublicUrl(path);
+
+    return data.publicUrl;
+  }
+
   async function loadProducts() {
     if (!currentUser) return;
 
-    status("saveStatus", "");
     $("productsList").textContent = "جارٍ تحميل المنتجات...";
 
     const { data, error } = await db
@@ -206,8 +286,23 @@
       title.textContent = product.name || "منتج";
       item.appendChild(title);
 
+      const imageUrl = product.image_url || product.image;
+
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = product.name || "صورة المنتج";
+        img.loading = "lazy";
+        item.appendChild(img);
+      }
+
+      const category = document.createElement("p");
+      category.textContent = "القسم: " + (product.category || "عام");
+      item.appendChild(category);
+
       const price = document.createElement("p");
-      price.textContent = "السعر: " + (product.price ?? "غير محدد");
+      price.textContent = "السعر: " +
+        (product.price ?? "غير محدد");
       item.appendChild(price);
 
       const description = document.createElement("p");
@@ -215,7 +310,8 @@
       item.appendChild(description);
 
       const link = document.createElement("a");
-      link.href = product.affiliate_url || product.affiliate_link || "#";
+      link.href = product.affiliate_url ||
+        product.affiliate_link || "#";
       link.textContent = "فتح رابط المنتج";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
@@ -237,10 +333,17 @@
   }
 
   function editProduct(product) {
+    resetForm();
+
     $("productId").value = product.id || "";
     $("name").value = product.name || "";
     $("price").value = product.price ?? "";
-    $("image").value = product.image_url || product.image || "";
+
+    existingImageUrl = product.image_url || product.image || null;
+    $("image").value = existingImageUrl || "";
+    showImage(existingImageUrl);
+
+    $("category").value = product.category || "عام";
     $("description").value = product.description || "";
     $("affiliate").value =
       product.affiliate_url || product.affiliate_link || "";
@@ -253,13 +356,15 @@
   function resetForm() {
     $("productForm").reset();
     $("productId").value = "";
+    existingImageUrl = null;
+    showImage(null);
+    status("imageStatus", "");
+    status("saveStatus", "");
     $("formTitle").textContent = "إضافة منتج جديد";
     $("cancelEdit").classList.add("hidden");
   }
 
   $("loginButton").addEventListener("click", async () => {
-    if (!configureSupabase()) return;
-
     status("loginStatus", "جارٍ تسجيل الدخول...");
 
     const { data, error } = await db.auth.signInWithPassword({
@@ -278,7 +383,7 @@
   });
 
   $("logoutButton").addEventListener("click", async () => {
-    if (db) await db.auth.signOut();
+    await db.auth.signOut();
     currentUser = null;
     showAdmin(false);
     status("loginStatus", "تم تسجيل الخروج.");
@@ -287,40 +392,68 @@
   $("productForm").addEventListener("submit", async event => {
     event.preventDefault();
 
-    if (!currentUser || !db) {
+    if (!currentUser) {
       status("saveStatus", "سجّل الدخول أولًا.");
       return;
     }
 
-    const id = $("productId").value;
-    const product = {
-      name: $("name").value.trim(),
-      price: $("price").value === "" ? null : Number($("price").value),
-      image_url: $("image").value.trim() || null,
-      description: $("description").value.trim(),
-      affiliate_url: $("affiliate").value.trim()
-    };
+    const saveButton = $("saveButton");
+    saveButton.disabled = true;
 
-    status("saveStatus", "جارٍ حفظ المنتج...");
+    try {
+      status("saveStatus", "جارٍ تجهيز المنتج...");
 
-    const result = id
-      ? await db.from("products").update(product).eq("id", id).select()
-      : await db.from("products").insert(product).select();
+      let imageUrl = $("image").value.trim() || existingImageUrl;
 
-    if (result.error) {
-      status("saveStatus", "تعذر حفظ المنتج: " + result.error.message);
-      return;
+      const file = $("imageFile").files[0];
+
+      if (file) {
+        status("saveStatus", "جارٍ رفع الصورة...");
+        imageUrl = await uploadImage(file);
+      }
+
+      const id = $("productId").value;
+
+      const product = {
+        name: $("name").value.trim(),
+        price: $("price").value === ""
+          ? null
+          : Number($("price").value),
+        image_url: imageUrl || null,
+        category: $("category").value,
+        description: $("description").value.trim(),
+        affiliate_url: $("affiliate").value.trim()
+      };
+
+      status("saveStatus", "جارٍ حفظ المنتج...");
+
+      const result = id
+        ? await db.from("products").update(product).eq("id", id)
+        : await db.from("products").insert(product);
+
+      if (result.error) throw result.error;
+
+      status("saveStatus", "تم حفظ المنتج بنجاح.");
+      resetForm();
+      await loadProducts();
+
+    } catch (error) {
+      status(
+        "saveStatus",
+        "تعذر الحفظ: " + (error.message || "حدث خطأ غير معروف")
+      );
+    } finally {
+      saveButton.disabled = false;
     }
-
-    status("saveStatus", "تم حفظ المنتج بنجاح.");
-    resetForm();
-    await loadProducts();
   });
 
   async function deleteProduct(id) {
     if (!currentUser || !confirm("هل تريد حذف هذا المنتج؟")) return;
 
-    const { error } = await db.from("products").delete().eq("id", id);
+    const { error } = await db
+      .from("products")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       status("saveStatus", "تعذر الحذف: " + error.message);
