@@ -238,11 +238,11 @@
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Supabase error:", error);
-        statusBox.textContent =
-          "تعذر تحميل المنتجات. تأكد من اتصال قاعدة البيانات وسياسات القراءة.";
-        return;
-      }
+  console.error("Supabase error:", error);
+  statusBox.textContent =
+    "خطأ قاعدة البيانات: " + error.message;
+  return;
+}
 
       allProducts = data || [];
       renderProducts();
